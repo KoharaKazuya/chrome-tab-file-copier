@@ -37,6 +37,16 @@ export type CopyFailedResponse = {
   copiedFiles: string[];
 };
 
+/** リクエストを読み取れない場合の安全な応答。 */
+export type InvalidRequestResponse = {
+  success: false;
+  error: "INVALID_REQUEST";
+  message: string;
+};
+
 /** Native Host から Extension へ返す応答。 */
 export type NativeResponse =
-  CopySucceededResponse | PrecheckFailedResponse | CopyFailedResponse;
+  | CopySucceededResponse
+  | PrecheckFailedResponse
+  | CopyFailedResponse
+  | InvalidRequestResponse;
