@@ -4,7 +4,7 @@
 
 - Chrome Manifest V3 拡張機能と Node.js / TypeScript Native Messaging Host で構成する。
 - Extension は選択タブの URL からファイル名を抽出して Native Host を呼び出す。ローカルファイルの検証とコピーは Native Host だけが担当する。
-- 仕様の正本は `docs/spec.md`、リリース状況の正本は `docs/current-status.md` とする。
+- 仕様の正本は `docs/spec.md` とする。
 
 ## 開発コマンド
 
@@ -23,10 +23,9 @@
 - 設定は `chrome.storage.local` に保存する。Chrome Sync は使わない。
 - Native Host を変更した場合は `npm run build` 後に OS ごとのインストーラーを再実行する必要がある。詳細は `README.md` を参照する。
 
-## 資料と進捗管理
+## 資料管理
 
 - README、仕様書、運用手順など、このリポジトリで作成・更新する資料は日本語で記述する。
-- 作業の開始、完了、保留、方針変更時には `docs/current-status.md` を更新する。
 - 新しい仕様や恒久的な制約は `docs/spec.md` に記録する。一時的な実装計画やテスト記録は、完了後に不要なら削除する。
 
 ## Git コミット
