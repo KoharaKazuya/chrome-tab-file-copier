@@ -6,12 +6,14 @@ import {
   readNativeMessage,
   writeNativeMessage,
 } from "./nativeMessaging.js";
+import { executeCopyPlan } from "./copy.js";
 import { parseNativeRequest } from "./requestHandler.js";
 import type {
   InvalidRequestResponse,
   NativeRequest,
   NativeResponse,
 } from "./protocol.js";
+import { createCopyPlan } from "./validate.js";
 
 export type RequestProcessor = (
   request: NativeRequest,
@@ -21,6 +23,17 @@ function isInvalidRequestResponse(
   request: NativeRequest | InvalidRequestResponse,
 ): request is InvalidRequestResponse {
   return "error" in request && request.error === "INVALID_REQUEST";
+}
+
+/** コピー要求を、事前検証してから Native Host 内で実行する。 */
+export async function processCopyRequest(
+  request: NativeRequest,
+): Promise<NativeResponse> {
+  const plan = await createCopyPlan(request);
+  if ("error" in plan) {
+    return plan;
+  }
+  return executeCopyPlan(plan);
 }
 
 /** 標準入出力を使って Native Messaging の要求を 1 件処理する。 */
@@ -61,10 +74,6 @@ if (
     process.stdin,
     process.stdout,
     process.stderr,
-    async () => ({
-      success: false,
-      error: "PRECHECK_FAILED",
-      issues: [{ type: "COPY_NOT_IMPLEMENTED" }],
-    }),
+    processCopyRequest,
   );
 }

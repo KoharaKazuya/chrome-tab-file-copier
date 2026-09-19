@@ -6,27 +6,29 @@
 
 フェーズ 2: Native Host のコピー計画・検証・コピーを実装する
 
-状態: 作業中
+状態: 完了
 
 ## 完了済み
 
 - 仕様書を `docs/spec.md` に保存した。
 - 実装計画を `docs/implementation-plan.md` に保存した。
 - コミット運用、資料の日本語記述、進捗管理のルールを `AGENTS.md` に記録した。
+- フェーズ 2: Native Host のコピー計画・検証・コピーを実装した。
 
 ## 作業中
 
-フェーズ 2 の項目 2-3: コピー計画の作成と全件事前検証を実装中。
+なし
 
 ## 次に着手する項目
 
-フェーズ 2 の項目 2-3: key から安全なパスを作成し、コピー前にすべての入力・出力パスを走査して
-問題を集約する。
+実装計画フェーズ 3 の最初の項目: Manifest V3 の Extension 設定と Native Host 名の定数を定義する。
 
 ## 直近の検証結果
 
 - `npm run build`、`npm run format:check`、`npm run lint`、`npm test`、`git diff --check` が成功した。
-- Native Messaging のフレーミングと安全なエラー応答を検証する自動テスト 5 件が成功した。
+- Native Messaging のフレーミングと安全なエラー応答を検証する自動テスト 7 件が成功した。
+- `npm run build`、`npm run format:check`、`npm run lint`、`npm test`、`git diff --check` が成功した。
+  Native Host のコピー計画・検証・コピーを検証する自動テスト 8 件を含め、全 15 件が成功した。
 
 ## 運用メモ
 
@@ -45,7 +47,13 @@
 - フェーズ 1 の項目 4 として、Native Messaging の 4 バイト little-endian 長と UTF-8 JSON による
   フレーミングを実装した。不正 JSON、型不正、未知の `type` は `INVALID_REQUEST` 応答へ変換し、診断は
   stderr のみに出力する。stdout はフレーム化したプロトコル応答だけを書き込む。
-- フェーズ 1 の完了条件を満たした。空の `COPY_FILES` 要求の入出力、および不正な要求の安全なエラー応答を
+- フェーズ 1 の完了条件を満たした。有効な `COPY_FILES` 要求の入出力、および不正な要求の安全なエラー応答を
   自動テストで確認済みである。
 - フェーズ 2 の項目 1 として、`sourceRoot`、`destination`、`keys` の空値を拒否し、重複した key を
-  `INVALID_REQUEST` として拒否する実行時検証を実装中である。
+  `INVALID_REQUEST` として拒否する実行時検証を実装した。
+- フェーズ 2 の項目 2-3 として、basename 以外の key を拒否し、コピー元・先のディレクトリ、全 source、
+  全 destination をコピー開始前に走査するコピー計画を実装した。問題は `PRECHECK_FAILED` に集約する。
+- フェーズ 2 の項目 4-5 として、`COPYFILE_EXCL` を使う排他的コピーを実装した。コピー途中の失敗では後続を
+  実行せず、成功済みと失敗した key を含む `COPY_FAILED` を返す。`main.ts` からの実行経路も結線した。
+- フェーズ 2 の完了条件を満たした。正常コピー、source 不在、destination 衝突、トラバーサル、コピー途中の
+  競合時における上書き防止を、一時ディレクトリを使用する自動テストで確認済みである。
