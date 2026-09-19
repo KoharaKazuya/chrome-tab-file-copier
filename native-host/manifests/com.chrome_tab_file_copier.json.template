@@ -1,0 +1,7 @@
+{
+  "name": "com.chrome_tab_file_copier",
+  "description": "Chrome Tab File Copier Native Messaging Host",
+  "path": "__LAUNCHER_PATH__",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://__EXTENSION_ID__/"]
+}
