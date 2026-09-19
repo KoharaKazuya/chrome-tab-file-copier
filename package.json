@@ -1,0 +1,27 @@
+{
+  "name": "chrome-tab-file-copier",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Chrome の選択タブから抽出したファイルを Native Messaging 経由でコピーするツール",
+  "workspaces": [
+    "extension",
+    "native-host"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
+    "format:check": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.3",
+    "vitest": "^4.0.8"
+  }
+}
