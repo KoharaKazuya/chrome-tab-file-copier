@@ -11,6 +11,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "npm run build --workspaces",
     "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
     "lint": "eslint . --max-warnings=0",

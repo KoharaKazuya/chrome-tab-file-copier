@@ -6,7 +6,7 @@
 
 フェーズ 1: 開発基盤と共有する契約を整える
 
-状態: 進行中（項目 1 完了）
+状態: 進行中（項目 2 完了）
 
 ## 完了済み
 
@@ -20,12 +20,12 @@
 
 ## 次に着手する項目
 
-実装計画フェーズ 1 の次の項目: Extension と Native Host を別パッケージとして初期化し、ビルド成果物を
-分離する。
+実装計画フェーズ 1 の次の項目: `COPY_FILES` リクエスト、成功、`PRECHECK_FAILED`、`COPY_FAILED` の
+TypeScript 型を `native-host/src/protocol.ts` に定義する。
 
 ## 直近の検証結果
 
-- `npm run format:check`、`npm run lint`、`npm test`、`git diff --check` が成功した。
+- `npm run build`、`npm run format:check`、`npm run lint`、`npm test`、`git diff --check` が成功した。
 - テスト対象はまだ存在しないため、Vitest はテスト 0 件で成功している。
 
 ## 運用メモ
@@ -36,3 +36,6 @@
 - フェーズ 1 の項目 1 として、npm workspaces、共通 TypeScript 設定、ESLint、Prettier、Vitest の
   実行コマンドを追加した。既存資料への不要な整形変更を避けるため、format コマンドはコードと設定
   ファイルのみを検査対象とする。
+- フェーズ 1 の項目 2 として、`extension` と `native-host` を npm workspace として初期化した。
+  各パッケージは独自の TypeScript 設定で `src/` から `dist/` へビルドし、ルートの `npm run build` で
+  両方を実行する。
