@@ -1,59 +1,84 @@
 # Chrome Tab File Copier
 
-Chrome で選択したタブの URL からファイル名を抽出し、ローカルのコピー元ディレクトリからコピー先へ安全にコピーする Manifest V3 拡張機能です。ローカルファイルの操作は Native Messaging Host のみが担当します。
+Chrome で選択したタブの URL からファイル名を抽出し、ローカルのコピー元ディレクトリからコピー先へコピーする拡張機能です。ローカルファイルの操作は Native Messaging Host が担当します。
 
-## 開発
+## 動作要件
 
-Node.js 22 以降を用意して、依存関係をインストールします。
+- Google Chrome
+- Node.js 22 以降
+- macOS、Linux、または Windows
 
-```sh
-npm ci
-npm run build
-npm run format:check
-npm run lint
-npm test
-```
+## インストール
 
-`npm run build` は `extension/dist/` と `native-host/dist/` を生成します。CI でも整形、lint、単体・結合テスト、ビルド、差分の空白エラー検査を実行します。
+1. このリポジトリを取得し、依存関係のインストールとビルドを行います。
 
-## 拡張機能の読み込みと設定
+   ```sh
+   npm ci
+   npm run build
+   ```
 
-1. Chrome の `chrome://extensions` を開き、デベロッパーモードを有効にする。
-2. 「パッケージ化されていない拡張機能を読み込む」から、このリポジトリの `extension/` ディレクトリを選択する。
-3. 表示された Extension ID を控える。
-4. 拡張機能の詳細画面から「拡張機能のオプション」を開き、URL 正規表現、コピー元、コピー先、成功後にタブを閉じるかを保存する。
+2. Chrome で `chrome://extensions` を開き、デベロッパーモードを有効にします。「パッケージ化されていない拡張機能を読み込む」から、このリポジトリの `extension/` ディレクトリを選択します。
 
-正規表現の第 1 キャプチャをファイル名として使用します。たとえば `^https://example\\.com/files/([^/?#]+)$` は `https://example.com/files/ABC.pdf` から `ABC.pdf` を抽出します。
+3. 拡張機能一覧に表示された Extension ID を控え、使用している OS のコマンドで Native Host を登録します。
 
-## Native Host のインストール
+   ```sh
+   # macOS
+   bash install/macos.sh <EXTENSION_ID>
 
-先に `npm run build` を実行してから、Chrome に表示された Extension ID を渡します。ID 未指定、形式不正、Node.js 未導入、ビルド成果物未生成の場合はインストーラーが停止します。
+   # Linux
+   bash install/linux.sh <EXTENSION_ID>
+   ```
+
+   ```powershell
+   # Windows PowerShell
+   .\install\windows.ps1 -ExtensionId <EXTENSION_ID>
+   ```
+
+4. Chrome を完全に再起動します。拡張機能の詳細画面から「拡張機能のオプション」を開き、URL 正規表現、コピー元ディレクトリ、コピー先ディレクトリ、成功後にタブを閉じるかを設定します。
+
+正規表現の第 1 キャプチャをファイル名として使います。たとえば `^https://example\\.com/files/([^/?#]+)$` は、`https://example.com/files/ABC.pdf` から `ABC.pdf` を抽出します。
+
+## 使い方
+
+1. 現在の Chrome ウィンドウで対象タブを選択します。複数選択にも対応します。
+2. 拡張機能の Popup を開き、「コピーを実行」を選択します。
+3. すべてのコピーに成功した場合のみ、設定に応じて対象タブを閉じます。同じファイル名を抽出したタブは、ファイルを一度だけコピーしてすべて閉じます。
+
+コピー先に同名ファイルがある、コピー元が存在しない、または URL が正規表現に一致しない場合、コピーとタブのクローズは行いません。
+
+## 更新・アンインストール
+
+拡張機能または Native Host を更新した場合は、`npm run build` を実行してから Native Host のインストーラーを再実行し、Chrome を完全に再起動してください。
+
+アンインストールは使用 OS に応じて次を実行します。Native Host の登録と配置済みファイルを削除します。
 
 ```sh
 # macOS
-bash install/macos.sh <EXTENSION_ID>
+bash install/uninstall-macos.sh
 
 # Linux
-bash install/linux.sh <EXTENSION_ID>
+bash install/uninstall-linux.sh
 ```
 
 ```powershell
 # Windows PowerShell
-.\install\windows.ps1 -ExtensionId <EXTENSION_ID>
+.\install\uninstall-windows.ps1
 ```
 
-各インストーラーはユーザー領域へ Host とランチャーを配置し、macOS/Linux では Chrome の `NativeMessagingHosts` ディレクトリへ manifest を、Windows では `HKCU\Software\Google\Chrome\NativeMessagingHosts` へ登録します。完了後は Chrome を完全に再起動してください。
+## 開発と検証
 
-アンインストールは、使用 OS に応じて `bash install/uninstall-macos.sh`、`bash install/uninstall-linux.sh`、または `./install/uninstall-windows.ps1` を実行します。これらは登録と配置済み Host を削除します。
+```sh
+npm run format:check
+npm run lint
+npm test
+npm run build
+```
 
 ## トラブルシュート
 
-- Popup に Native Host 通信エラーが出る: `npm run build` 後に、現在 Chrome に読み込んでいる Extension ID でインストーラーを再実行し、Chrome を再起動する。
-- コピー前の検証エラーが出る: コピー元・コピー先が存在するディレクトリか、抽出名に対応する通常ファイルが存在するか、コピー先に同名ファイルがないかを確認する。
-- URL エラーが出る: 設定画面のテスト欄で URL と正規表現を確認する。第 1 キャプチャは空にできない。
-- コピー開始後に進まないように見える: Native Host の応答は 1 メッセージを受信し次第返す。拡張機能を更新した後は
-  `npm run build` と Native Host の再インストールを行い、Chrome を完全に再起動する。
-- コピー成功後にタブが残る: 「コピー成功後にタブを閉じる」が有効か確認する。コピーとクローズは Popup ではなく
-  バックグラウンドで実行するため、Popup を閉じても処理は継続する。既に閉じられたタブは安全に無視される。
+- Native Host 通信エラー: `npm run build` 後、Chrome に読み込まれている Extension ID でインストーラーを再実行し、Chrome を完全に再起動します。
+- コピー前の検証エラー: コピー元・コピー先が存在するディレクトリか、抽出したファイルがコピー元にあるか、コピー先に同名ファイルがないかを確認します。
+- URL エラー: 設定画面のテスト欄で URL と正規表現を確認します。第 1 キャプチャは空にできません。
+- コピー成功後にタブが残る: 「コピー成功後にタブを閉じる」が有効かを確認します。コピーとタブのクローズはバックグラウンドで実行されるため、Popup を閉じても処理は継続します。
 
-実機での確認項目は [手動受け入れテスト](docs/manual-acceptance-test.md) を参照してください。
+詳細な仕様は [docs/spec.md](docs/spec.md) を参照してください。
