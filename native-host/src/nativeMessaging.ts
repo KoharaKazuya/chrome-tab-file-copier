@@ -6,27 +6,47 @@ const MAX_MESSAGE_BYTES = 1024 * 1024;
 
 export class NativeMessagingError extends Error {}
 
-/** Native Messaging の 4 バイト長ヘッダー付き JSON フレームを読み取る。 */
-export async function readNativeMessage(input: Readable): Promise<unknown> {
+async function readFrameBytes(input: Readable): Promise<Buffer> {
   const chunks: Buffer[] = [];
+  let byteLength = 0;
+  let expectedLength: number | undefined;
 
   for await (const chunk of input) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    chunks.push(bytes);
+    byteLength += bytes.length;
+
+    if (expectedLength === undefined && byteLength >= HEADER_LENGTH) {
+      const buffered = Buffer.concat(chunks);
+      const messageLength = buffered.readUInt32LE(0);
+      if (messageLength > MAX_MESSAGE_BYTES) {
+        throw new NativeMessagingError(
+          "メッセージが許容サイズを超えています。",
+        );
+      }
+      expectedLength = HEADER_LENGTH + messageLength;
+    }
+
+    if (expectedLength !== undefined && byteLength >= expectedLength) {
+      const frame = Buffer.concat(chunks);
+      if (frame.length !== expectedLength) {
+        throw new NativeMessagingError(
+          "メッセージ長がヘッダーと一致しません。",
+        );
+      }
+      return frame;
+    }
   }
 
-  const frame = Buffer.concat(chunks);
-  if (frame.length < HEADER_LENGTH) {
+  if (byteLength < HEADER_LENGTH) {
     throw new NativeMessagingError("メッセージヘッダーが不足しています。");
   }
+  throw new NativeMessagingError("メッセージ長がヘッダーと一致しません。");
+}
 
-  const messageLength = frame.readUInt32LE(0);
-  if (messageLength > MAX_MESSAGE_BYTES) {
-    throw new NativeMessagingError("メッセージが許容サイズを超えています。");
-  }
-
-  if (frame.length !== HEADER_LENGTH + messageLength) {
-    throw new NativeMessagingError("メッセージ長がヘッダーと一致しません。");
-  }
+/** Native Messaging の 4 バイト長ヘッダー付き JSON フレームを読み取る。 */
+export async function readNativeMessage(input: Readable): Promise<unknown> {
+  const frame = await readFrameBytes(input);
 
   let text: string;
   try {

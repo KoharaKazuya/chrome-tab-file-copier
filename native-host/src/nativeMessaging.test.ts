@@ -53,6 +53,38 @@ describe("Native Messaging フレーミング", () => {
     });
   });
 
+  it("入力ストリームの EOF を待たず、1 フレーム受信後に応答する", async () => {
+    const input = new PassThrough();
+    const output = new PassThrough();
+    const errors = new PassThrough();
+    const response = readNativeMessage(output);
+
+    input.write(
+      nativeFrame(
+        Buffer.from(
+          JSON.stringify({
+            type: "COPY_FILES",
+            sourceRoot: "/source",
+            destination: "/destination",
+            keys: ["ABC.pdf"],
+          }),
+        ),
+      ),
+    );
+
+    const handling = handleNativeMessage(input, output, errors, async () => ({
+      success: true,
+      copiedFiles: ["ABC.pdf"],
+    }));
+
+    await expect(response).resolves.toEqual({
+      success: true,
+      copiedFiles: ["ABC.pdf"],
+    });
+    await expect(handling).resolves.toBeUndefined();
+    input.end();
+  });
+
   it.each([
     ["JSON 不正", Buffer.from("{"), "メッセージが有効な JSON ではありません。"],
     [

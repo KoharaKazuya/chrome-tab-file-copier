@@ -21,7 +21,7 @@ CI、手動受け入れテスト手順、README を整備中。実機 Chrome と
 
 ## 次に着手する項目
 
-CI と文書を検証後、Extension ID を指定して実機受け入れテストを実施する。
+Extension ID を指定して、応答遅延の解消と成功後タブクローズを含む実機受け入れテストを実施する。
 
 ## 直近の検証結果
 
@@ -34,6 +34,14 @@ CI と文書を検証後、Extension ID を指定して実機受け入れテス�
 - フェーズ 7 の準備として、`npm run format:check`、`npm run lint`、`npm test`、`npm run build`、
   `git diff --check` が成功した。自動テストは全 30 件が成功した。GitHub Actions の実行結果、
   3 OS の Host 登録、および Chrome 実機 end-to-end は未確認である。
+- Native Host が入力ストリームの EOF まで待ってから応答していたため、Chrome が接続を維持する状況でコピー開始が
+  遅延する問題を修正した。長さヘッダーと本文の 1 フレームを受信した時点で要求を処理する。EOF を閉じない入力でも
+  応答する自動テストを追加した。
+- Popup の終了により成功後のタブクローズが中断され得たため、設定読み込み、コピー実行、成功後のタブクローズを
+  Manifest V3 Service Worker へ移行した。Popup は結果表示だけを担う。成功・クローズ設定オフ・コピー失敗の
+  各ケースを自動テストで確認した。
+- 上記修正後、`npm run format:check`、`npm run lint`、`npm test`、`npm run build`、`git diff --check` が成功した。
+  自動テストは全 34 件が成功した。実機 Chrome での Native Host 再インストール後の動作確認は未実施である。
 
 ## 運用メモ
 

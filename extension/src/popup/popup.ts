@@ -1,6 +1,12 @@
-import { executeCopyAction, type CopyActionResult } from "../copyAction.js";
-import { loadSettings } from "../settings.js";
-import { closeTabsBestEffort } from "../tabCloser.js";
+import type { BackgroundCopyResult } from "../backgroundAction.js";
+
+type BackgroundExecutionFailure = {
+  success: false;
+  error: "BACKGROUND_EXECUTION_FAILED";
+  message: string;
+};
+type BackgroundMessageResponse =
+  BackgroundCopyResult | BackgroundExecutionFailure;
 
 function requiredElement<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -20,7 +26,7 @@ function showResult(message: string, state: "success" | "error"): void {
 }
 
 function formatFailure(
-  result: Exclude<CopyActionResult, { success: true }>,
+  result: Exclude<BackgroundMessageResponse, { success: true }>,
 ): string {
   switch (result.error) {
     case "URL_VALIDATION_FAILED":
@@ -35,30 +41,43 @@ function formatFailure(
       return `Native Host と通信できませんでした: ${result.message}`;
     case "NO_HIGHLIGHTED_TABS":
       return "選択されているタブがありません。";
+    case "BACKGROUND_EXECUTION_FAILED":
+      return `バックグラウンド処理を実行できませんでした: ${result.message}`;
   }
+}
+
+function isBackgroundMessageResponse(
+  value: unknown,
+): value is BackgroundMessageResponse {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const response = value as Record<string, unknown>;
+  if (response.success === true) {
+    return (
+      Array.isArray(response.copiedFiles) &&
+      response.copiedFiles.every((file) => typeof file === "string") &&
+      typeof response.closedTabCount === "number"
+    );
+  }
+  return response.success === false && typeof response.error === "string";
 }
 
 async function execute(): Promise<void> {
   executeButton.disabled = true;
   showResult("コピーを実行しています…", "success");
   try {
-    const settings = await loadSettings();
-    const result = await executeCopyAction(settings);
-    if (!result.success) {
-      showResult(formatFailure(result), "error");
+    const response = await chrome.runtime.sendMessage({ type: "EXECUTE_COPY" });
+    if (!isBackgroundMessageResponse(response)) {
+      showResult("バックグラウンド処理から不正な応答を受信しました。", "error");
       return;
     }
-
-    if (!settings.closeTabsAfterSuccess) {
-      showResult(
-        `${result.copiedFiles.length} 件のファイルをコピーしました。`,
-        "success",
-      );
+    if (!response.success) {
+      showResult(formatFailure(response), "error");
       return;
     }
-    const closedCount = await closeTabsBestEffort(result.tabIds);
     showResult(
-      `${result.copiedFiles.length} 件のファイルをコピーしました。${closedCount} 件のタブを閉じました。`,
+      `${response.copiedFiles.length} 件のファイルをコピーしました。${response.closedTabCount} 件のタブを閉じました。`,
       "success",
     );
   } catch (error) {

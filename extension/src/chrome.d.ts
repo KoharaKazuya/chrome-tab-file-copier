@@ -18,7 +18,17 @@ interface ChromeTabs {
 
 interface ChromeRuntime {
   sendNativeMessage(hostName: string, message: unknown): Promise<unknown>;
+  sendMessage(message: unknown): Promise<unknown>;
   openOptionsPage(): Promise<void>;
+  onMessage: {
+    addListener(
+      callback: (
+        message: unknown,
+        sender: unknown,
+        sendResponse: (response: unknown) => void,
+      ) => boolean | void,
+    ): void;
+  };
 }
 
 declare const chrome: {
