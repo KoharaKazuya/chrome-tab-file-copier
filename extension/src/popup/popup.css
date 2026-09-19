@@ -1,0 +1,40 @@
+:root {
+  color: #1f2937;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  background: #f8fafc;
+}
+
+main {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+button {
+  padding: 8px 12px;
+  font: inherit;
+}
+
+#result {
+  min-height: 2.5em;
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+
+#result[data-state="error"] {
+  color: #b91c1c;
+}
+
+#result[data-state="success"] {
+  color: #166534;
+}

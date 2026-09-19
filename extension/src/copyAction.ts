@@ -10,7 +10,8 @@ export type CopyActionResult =
       error: "URL_VALIDATION_FAILED";
       issues: Array<{ tabId?: number; reason: string }>;
     }
-  | { success: false; error: "NATIVE_COMMUNICATION_FAILED"; message: string };
+  | { success: false; error: "NATIVE_COMMUNICATION_FAILED"; message: string }
+  | { success: false; error: "NO_HIGHLIGHTED_TABS" };
 
 export type CopyActionDependencies = {
   queryHighlightedTabs(): Promise<TabSnapshot[]>;
@@ -33,6 +34,9 @@ export async function executeCopyAction(
   dependencies: CopyActionDependencies = chromeDependencies,
 ): Promise<CopyActionResult> {
   const tabs = await dependencies.queryHighlightedTabs();
+  if (tabs.length === 0) {
+    return { success: false, error: "NO_HIGHLIGHTED_TABS" };
+  }
   const targets = createCopyTargets(tabs, settings.urlPattern);
   if ("success" in targets) {
     return targets;

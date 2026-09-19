@@ -9,7 +9,7 @@ const packageDirectory = path.resolve(
 const sourceDirectory = path.join(packageDirectory, "src");
 const outputDirectory = path.join(packageDirectory, "dist");
 
-for (const directory of ["options"]) {
+for (const directory of ["options", "popup"]) {
   await mkdir(path.join(outputDirectory, directory), { recursive: true });
   await cp(
     path.join(sourceDirectory, directory),

@@ -50,6 +50,17 @@ describe("コピー実行", () => {
     expect(requestCopy).not.toHaveBeenCalled();
   });
 
+  it("選択タブがない場合は Native Host を呼び出さない", async () => {
+    const requestCopy = vi.fn();
+    await expect(
+      executeCopyAction(settings, {
+        queryHighlightedTabs: vi.fn().mockResolvedValue([]),
+        requestCopy,
+      }),
+    ).resolves.toEqual({ success: false, error: "NO_HIGHLIGHTED_TABS" });
+    expect(requestCopy).not.toHaveBeenCalled();
+  });
+
   it("Native Host 通信例外を結果モデルへ変換する", async () => {
     await expect(
       executeCopyAction(settings, {
