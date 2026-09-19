@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chrome Tab File Copier の設定</title>
+    <link rel="stylesheet" href="options.css" />
+    <script type="module" src="options.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Chrome Tab File Copier の設定</h1>
+      <form id="settings-form">
+        <label>
+          URL 正規表現
+          <input id="url-pattern" name="urlPattern" type="text" required />
+        </label>
+        <label>
+          コピー元ディレクトリ
+          <input id="source-root" name="sourceRoot" type="text" required />
+        </label>
+        <label>
+          コピー先ディレクトリ
+          <input id="destination" name="destination" type="text" required />
+        </label>
+        <label class="checkbox-label">
+          <input id="close-tabs" name="closeTabsAfterSuccess" type="checkbox" />
+          コピー成功後にタブを閉じる
+        </label>
+        <button type="submit">保存</button>
+      </form>
+      <p id="save-status" role="status" aria-live="polite"></p>
+
+      <section aria-labelledby="pattern-test-title">
+        <h2 id="pattern-test-title">URL 正規表現をテスト</h2>
+        <label>
+          テストする URL
+          <input
+            id="test-url"
+            type="url"
+            placeholder="https://example.com/files/ABC.pdf"
+          />
+        </label>
+        <button id="test-pattern" type="button">テスト</button>
+        <p id="pattern-test-result" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+  </body>
+</html>
