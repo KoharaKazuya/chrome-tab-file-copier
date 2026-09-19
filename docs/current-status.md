@@ -6,7 +6,7 @@
 
 フェーズ 1: 開発基盤と共有する契約を整える
 
-状態: 進行中（項目 2 完了）
+状態: 進行中（項目 3 完了）
 
 ## 完了済み
 
@@ -20,8 +20,8 @@
 
 ## 次に着手する項目
 
-実装計画フェーズ 1 の次の項目: `COPY_FILES` リクエスト、成功、`PRECHECK_FAILED`、`COPY_FAILED` の
-TypeScript 型を `native-host/src/protocol.ts` に定義する。
+実装計画フェーズ 1 の次の項目: Native Messaging の 4 バイト little-endian 長 + UTF-8 JSON
+フレーミングを実装し、stdout がプロトコル出力だけであることをテストする。
 
 ## 直近の検証結果
 
@@ -39,3 +39,6 @@ TypeScript 型を `native-host/src/protocol.ts` に定義する。
 - フェーズ 1 の項目 2 として、`extension` と `native-host` を npm workspace として初期化した。
   各パッケージは独自の TypeScript 設定で `src/` から `dist/` へビルドし、ルートの `npm run build` で
   両方を実行する。
+- フェーズ 1 の項目 3 として、`native-host/src/protocol.ts` に `COPY_FILES` 要求と、成功、
+  `PRECHECK_FAILED`、`COPY_FAILED` 応答の TypeScript 型を定義した。応答は `success` と `error` により
+  判別可能な union 型として公開する。
