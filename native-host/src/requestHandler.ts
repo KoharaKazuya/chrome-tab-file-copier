@@ -25,8 +25,16 @@ export function parseNativeRequest(
     return invalidRequest("sourceRoot は文字列で指定してください。");
   }
 
+  if (request.sourceRoot.trim().length === 0) {
+    return invalidRequest("sourceRoot は空でない文字列で指定してください。");
+  }
+
   if (typeof request.destination !== "string") {
     return invalidRequest("destination は文字列で指定してください。");
+  }
+
+  if (request.destination.trim().length === 0) {
+    return invalidRequest("destination は空でない文字列で指定してください。");
   }
 
   if (
@@ -34,6 +42,18 @@ export function parseNativeRequest(
     !request.keys.every((key) => typeof key === "string")
   ) {
     return invalidRequest("keys は文字列の配列で指定してください。");
+  }
+
+  if (request.keys.length === 0) {
+    return invalidRequest("keys には少なくとも 1 件の値を指定してください。");
+  }
+
+  if (request.keys.some((key) => key.trim().length === 0)) {
+    return invalidRequest("keys に空の文字列を含めることはできません。");
+  }
+
+  if (new Set(request.keys).size !== request.keys.length) {
+    return invalidRequest("keys に重複した値を含めることはできません。");
   }
 
   return request as CopyFilesRequest;

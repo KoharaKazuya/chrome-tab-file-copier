@@ -27,14 +27,14 @@ describe("Native Messaging フレーミング", () => {
     await expect(readOutput(output)).resolves.toEqual(message);
   });
 
-  it("空の有効な COPY_FILES 要求を読み書きできる", async () => {
+  it("有効な COPY_FILES 要求を読み書きできる", async () => {
     const output = new PassThrough();
     const errors = new PassThrough();
     const request = {
       type: "COPY_FILES",
       sourceRoot: "/source",
       destination: "/destination",
-      keys: [],
+      keys: ["ABC.pdf"],
     };
 
     await handleNativeMessage(
@@ -43,13 +43,13 @@ describe("Native Messaging フレーミング", () => {
       errors,
       async (received) => {
         expect(received).toEqual(request);
-        return { success: true, copiedFiles: [] };
+        return { success: true, copiedFiles: ["ABC.pdf"] };
       },
     );
 
     await expect(readOutput(output)).resolves.toEqual({
       success: true,
-      copiedFiles: [],
+      copiedFiles: ["ABC.pdf"],
     });
   });
 
@@ -64,6 +64,30 @@ describe("Native Messaging フレーミング", () => {
       "型不正",
       Buffer.from(JSON.stringify({ type: "COPY_FILES", sourceRoot: 1 })),
       "sourceRoot は文字列で指定してください。",
+    ],
+    [
+      "空の keys",
+      Buffer.from(
+        JSON.stringify({
+          type: "COPY_FILES",
+          sourceRoot: "/source",
+          destination: "/destination",
+          keys: [],
+        }),
+      ),
+      "keys には少なくとも 1 件の値を指定してください。",
+    ],
+    [
+      "重複した keys",
+      Buffer.from(
+        JSON.stringify({
+          type: "COPY_FILES",
+          sourceRoot: "/source",
+          destination: "/destination",
+          keys: ["ABC.pdf", "ABC.pdf"],
+        }),
+      ),
+      "keys に重複した値を含めることはできません。",
     ],
   ])("%s を安全なエラー応答にする", async (_name, payload, message) => {
     const output = new PassThrough();
