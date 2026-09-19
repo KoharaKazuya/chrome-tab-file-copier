@@ -1,12 +1,13 @@
-# Repository Instructions
+# リポジトリ運用ルール
 
-## Git commits
+## 資料の言語
 
-- Create a Git commit after each coherent, completed unit of work (for example,
-  a feature, bug fix, documentation update, or configuration change).
-- Before committing, inspect the working tree and stage only files that belong
-  to that unit of work. Do not include unrelated user changes.
-- Verify the relevant checks before committing whenever they are available.
-- Write commit messages in the repository's required Conventional Commit style:
-  use an imperative, user-facing summary on the first line, leave the second
-  line blank, and explain the reason and implementation in the body.
+- 設計書、実装計画、README、運用手順など、このリポジトリで作成・更新する資料は日本語で記述する。
+- コード、コマンド、ファイル名、固有の技術用語は、理解しやすさを優先して原文の表記を使用してよい。
+
+## Git コミット
+
+- 機能追加、バグ修正、資料更新、設定変更など、完了した一つのまとまりごとに Git コミットを作成する。
+- コミット前に作業ツリーを確認し、そのまとまりに属するファイルだけをステージする。ユーザーによる無関係な変更を含めない。
+- 利用可能な場合は、関連する検証を実行してからコミットする。
+- コミットメッセージはリポジトリで定められた Conventional Commits 形式にする。1 行目は利用者向けの命令形の要約、2 行目は空行とし、本文では変更理由と実装内容を説明する。
