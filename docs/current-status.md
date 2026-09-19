@@ -17,7 +17,7 @@
 
 ## 作業中
 
-フェーズ 3 の項目 2: `chrome.storage.local` を使う設定ストレージを実装する。
+フェーズ 3 の項目 3: options 画面のフォームと保存 UI を実装する。
 
 ## 次に着手する項目
 
@@ -60,3 +60,6 @@
 - フェーズ 3 の項目 1 として、`storage`、`tabs`、`nativeMessaging` 権限、popup、options page、
   module Service Worker を含む Manifest V3 を追加した。Native Host 名は
   `extension/src/constants.ts` の `NATIVE_HOST_NAME` に一元化した。
+- フェーズ 3 の項目 2 として、`chrome.storage.local` だけを使用する設定ストレージを実装した。
+  URL 正規表現、コピー元・先、成功後のタブクローズ設定を読み書きし、保存時は必須文字列を検証・
+  正規化する。設定ストレージの自動テストを追加し、Extension のビルド成果物をテスト対象から除外した。
