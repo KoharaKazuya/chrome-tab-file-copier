@@ -31,6 +31,9 @@ CI と文書を検証後、Extension ID を指定して実機受け入れテス�
   Native Host のコピー計画・検証・コピーを検証する自動テスト 8 件を含め、全 15 件が成功した。
 - `npm run build`、`npm run format:check`、`npm run lint`、`npm test`、`git diff --check` が成功した。
   設定ストレージと URL 正規表現の評価を含む全 21 件の自動テストが成功した。
+- フェーズ 7 の準備として、`npm run format:check`、`npm run lint`、`npm test`、`npm run build`、
+  `git diff --check` が成功した。自動テストは全 30 件が成功した。GitHub Actions の実行結果、
+  3 OS の Host 登録、および Chrome 実機 end-to-end は未確認である。
 
 ## 運用メモ
 
