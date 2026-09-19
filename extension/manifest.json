@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Tab File Copier",
+  "version": "0.0.0",
+  "description": "選択した Chrome タブの URL から抽出したファイルをコピーします。",
+  "permissions": ["storage", "tabs", "nativeMessaging"],
+  "action": {
+    "default_popup": "dist/popup/popup.html"
+  },
+  "options_page": "dist/options/options.html",
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  }
+}

@@ -4,9 +4,9 @@
 
 ## 現在のフェーズ
 
-フェーズ 2: Native Host のコピー計画・検証・コピーを実装する
+フェーズ 3: Extension の設定とオプション画面を実装する
 
-状態: 完了
+状態: 作業中
 
 ## 完了済み
 
@@ -17,11 +17,11 @@
 
 ## 作業中
 
-なし
+フェーズ 3 の項目 2: `chrome.storage.local` を使う設定ストレージを実装する。
 
 ## 次に着手する項目
 
-実装計画フェーズ 3 の最初の項目: Manifest V3 の Extension 設定と Native Host 名の定数を定義する。
+フェーズ 3 の項目 1 を完了し、設定ストレージの実装へ進む。
 
 ## 直近の検証結果
 
@@ -57,3 +57,6 @@
   実行せず、成功済みと失敗した key を含む `COPY_FAILED` を返す。`main.ts` からの実行経路も結線した。
 - フェーズ 2 の完了条件を満たした。正常コピー、source 不在、destination 衝突、トラバーサル、コピー途中の
   競合時における上書き防止を、一時ディレクトリを使用する自動テストで確認済みである。
+- フェーズ 3 の項目 1 として、`storage`、`tabs`、`nativeMessaging` 権限、popup、options page、
+  module Service Worker を含む Manifest V3 を追加した。Native Host 名は
+  `extension/src/constants.ts` の `NATIVE_HOST_NAME` に一元化した。
